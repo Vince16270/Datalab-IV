@@ -1,8 +1,8 @@
 task: detect
 mode: train
-model: yolov8s.pt
-data: '{dataset.location}/data.yaml'
-epochs: 1
+model: yolov8n.pt
+data: /Users/vince/DatalabIV/Datalab-IV/datasets/Aerial-Sheep-1/data.yaml
+epochs: 2
 patience: 50
 batch: 16
 imgsz: 800
