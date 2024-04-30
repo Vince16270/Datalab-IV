@@ -1,2 +1,2 @@
 # Datalab IV
-Datalab IV opdracht van Nima, Tommi en Vince
+In deze repository gaan we brenklauwen segmenteren met tensorflow in python. De opdracht is voor ons vak Datalab IV
