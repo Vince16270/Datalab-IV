@@ -1,16 +1,15 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse
 import numpy as np
 from tensorflow.keras.preprocessing.image import img_to_array, load_img
 import tensorflow as tf
 from io import BytesIO
 import logging
+from fastapi import FastAPI, File, UploadFile, HTTPException
 
 logging.basicConfig(level=logging.INFO)
 app = FastAPI()
 
-# Laad je model (zorg ervoor dat het pad naar je opgeslagen model klopt)
-model_path = '/Users/vince/School - Datalab IV/Datalab-IV/berenklauw_model.h5'
+model_path = '/Users/vince/School - Datalab IV/berenklauw_model.h5'
 model = tf.keras.models.load_model(model_path)
 
 async def preprocess_image(image: UploadFile):
@@ -58,26 +57,21 @@ def merge_patches(patches, image_shape, patch_size=256):
 async def predict(file: UploadFile = File(...)):
     try:
         logging.info("Received file for prediction")
-        # Preprocess de afbeelding
         image = await preprocess_image(file)
         original_shape = image.shape
         logging.info(f"Original image shape: {original_shape}")
-        
-        # Snijd de afbeelding in stukken van 256x256
+
         patches = split_image(image, patch_size=256)
         logging.info(f"Image split into {len(patches)} patches")
-        
-        # Voer voorspellingen uit voor elk stuk
+
         patches_array = np.array(patches)
         pred_patches = model.predict(patches_array)
         pred_patches_thresholded = (pred_patches > 0.5).astype(np.uint8)
         logging.info("Prediction completed")
-        
-        # Voeg de voorspelde stukken samen tot één volledige afbeelding
+
         reconstructed_mask = merge_patches(pred_patches_thresholded, original_shape, patch_size=256)
         logging.info("Patches merged into full image")
         
-        # Retourneer de voorspelling als JSON
         return JSONResponse(content={"prediction": reconstructed_mask.tolist()})
     except Exception as e:
         logging.error(f"Error in prediction: {e}")
@@ -86,3 +80,5 @@ async def predict(file: UploadFile = File(...)):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+#http://127.0.0.1:8000/docs
