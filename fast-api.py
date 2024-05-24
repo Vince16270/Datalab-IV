@@ -9,7 +9,7 @@ from fastapi import FastAPI, File, UploadFile, HTTPException
 logging.basicConfig(level=logging.INFO)
 app = FastAPI()
 
-model_path = '/Users/vince/School - Datalab IV/berenklauw_model.h5'
+model_path = 'C:\\Users\\nimaa\\Desktop\\School\\DataLab 4\\Datalab-IV\\berenklauw_model.h5'
 model = tf.keras.models.load_model(model_path)
 
 async def preprocess_image(image: UploadFile):
