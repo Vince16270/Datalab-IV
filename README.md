@@ -7,4 +7,4 @@ The goal of this project is to accurately segment the Giant Hogweed using variou
 	2.	DeepLab
 	3.	Fully Convolutional Network (FCN)
 	4.	Deep Layer Cascade
- 5.      ResNet-50
+    5.  ResNet-50
