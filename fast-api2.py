@@ -7,21 +7,25 @@ import io
 import uvicorn
 import time
 
+def iou(y_true, y_pred, smooth=1e-6):
+    y_true_f = tf.keras.backend.flatten(y_true)
+    y_pred_f = tf.keras.backend.flatten(y_pred)
+    intersection = tf.keras.backend.sum(y_true_f * y_pred_f)
+    union = tf.keras.backend.sum(y_true_f) + tf.keras.backend.sum(y_pred_f) - intersection
+    return (intersection + smooth) / (union + smooth)
+
 app = FastAPI()
 
-model_path = 'C:\\Users\\nimaa\\Desktop\\School\\DataLab 4\\Datalab-IV\\berenklauw_model.h5'
-model = tf.keras.models.load_model(model_path)
+model_path = '/Users/vince/School - Datalab IV/model_unet_300_ep.h5'
+model = tf.keras.models.load_model(model_path, custom_objects={'iou': iou})
 
 def read_imagefile(file: bytes) -> Image.Image:
-    image = Image.open(io.BytesIO(file))
-    return image
+    return Image.open(io.BytesIO(file))
 
 def preprocess_image(image: Image.Image) -> np.ndarray:
     image = image.resize((256, 256))
-    image = np.array(image)
-    image = image / 255.0
-    image = np.expand_dims(image, axis=0)
-    return image
+    image = np.array(image) / 255.0
+    return np.expand_dims(image, axis=0)
 
 @app.post("/predict")
 async def predict(
@@ -52,26 +56,26 @@ async def predict(
         image = image.convert("RGBA")
         mask = Image.new("RGBA", original_size, (255, 0, 0, 0))
         mask_array = np.array(predicted_mask_image)
-        mask_array = np.stack((mask_array, mask_array, mask_array, mask_array), axis=-1)
+        mask_array = np.stack((mask_array,) * 4, axis=-1)
         mask_image = Image.fromarray(np.where(mask_array > 128, [255, 0, 0, 128], [0, 0, 0, 0]).astype(np.uint8))
 
         combined = Image.alpha_composite(image, mask_image)
-        
+
         if return_option == "masked_image":
             buf = io.BytesIO()
             combined.save(buf, format='PNG')
             buf.seek(0)
             return StreamingResponse(buf, media_type="image/png")
-        
-        buf = io.BytesIO()
-        combined.save(buf, format='PNG')
-        buf.seek(0)
-        combined_output = buf.getvalue()
 
-        buf = io.BytesIO()
-        predicted_mask_image.save(buf, format='PNG')
-        buf.seek(0)
-        mask_output = buf.getvalue()
+        buf_combined = io.BytesIO()
+        combined.save(buf_combined, format='PNG')
+        buf_combined.seek(0)
+        combined_output = buf_combined.getvalue()
+
+        buf_mask = io.BytesIO()
+        predicted_mask_image.save(buf_mask, format='PNG')
+        buf_mask.seek(0)
+        mask_output = buf_mask.getvalue()
 
         return {"mask": mask_output, "masked_image": combined_output}
 
@@ -80,6 +84,5 @@ async def predict(
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
-
 
 #http://127.0.0.1:8000/docs
