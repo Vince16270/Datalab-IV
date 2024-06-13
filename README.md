@@ -1,4 +1,4 @@
-# Datalab IV
+# Giant Hogweed Segmentation with TensorFlow
 Welcome to our Giant Hogweed Segmentation project repository. This project is part of our Datalab IV course and aims to accurately segment the Giant Hogweed using various deep learning models implemented in TensorFlow.
 
 ### Project Objective
