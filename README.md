@@ -1,10 +1,16 @@
 # Datalab IV
-This repository contains the code and resources for segmenting the Giant Hogweed using TensorFlow in Python. This project is part of our Datalab IV course.
+Welcome to our Giant Hogweed Segmentation project repository. This project is part of our Datalab IV course and aims to accurately segment the Giant Hogweed using various deep learning models implemented in TensorFlow.
 
-The goal of this project is to accurately segment the Giant Hogweed using various deep learning models. We will be implementing and comparing five different models to determine the most effective approach. The models used in this project are:
+### Project Objective
 
-	1.	U-Net
-	2.	DeepLab
-	3.	Fully Convolutional Network (FCN)
-	4.	Deep Layer Cascade
-    5. ResNet-50
+The primary objective of this project is to develop and compare multiple deep learning models to determine the most effective approach for segmenting the Giant Hogweed.
+
+### Models Implemented
+
+We have implemented and compared the following five models:
+
+- U-Net
+- DeepLab
+- Fully Convolutional Network (FCN)
+- Deep Layer Cascade
+- ResNet-50
